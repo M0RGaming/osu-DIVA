@@ -60,7 +60,7 @@ namespace osu.Game.Rulesets.Diva.UI
 
         public bool OnPressed(KeyBindingPressEvent<DivaAction> e)
         {
-            this.hitSample.Play();
+            
             return true;
         }
 

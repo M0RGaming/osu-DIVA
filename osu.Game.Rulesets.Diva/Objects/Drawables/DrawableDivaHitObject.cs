@@ -36,6 +36,7 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
         protected readonly ApproachPiece approachPiece;
 
         protected readonly DivaAction validAction;
+        protected readonly DivaAction altAction;
 
         protected bool validPress = false;
         protected bool pressed = false;
@@ -76,6 +77,24 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
             });
 
             validAction = hitObject.ValidAction;
+
+            switch (validAction) {
+                case DivaAction.Circle:
+                    altAction = DivaAction.Right;
+                    break;
+
+                case DivaAction.Cross:
+                    altAction = DivaAction.Down;
+                    break;
+
+                case DivaAction.Square:
+                    altAction = DivaAction.Left;
+                    break;
+                case DivaAction.Triangle:
+                    altAction = DivaAction.Up;
+                    break;
+            };
+
         }
 
         [BackgroundDependencyLoader(true)]
@@ -128,6 +147,7 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
         public override void PlaySamples()
         {
+            //this.Samples.Play();
         }
 
         protected override void CheckForResult(bool userTriggered, double timeOffset)
@@ -150,8 +170,12 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
             if (pressed && timeOffset > (-time_action))
             {
+
                 if (validPress)
+                {
                     ApplyResult(r => r.Type = result);
+                    this.Samples.Play();
+                }
                 else
                     ApplyResult(r => r.Type = HitResult.Miss);
                 pressed = false;
@@ -175,7 +199,7 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
             {
                 case ArmedState.Hit:
 
-
+                    //this.Samples.Play();
                     if (enableVisualBursts.Value)
                         this.ScaleTo(1.5f, 1500, Easing.OutQuint).FadeOut(1500, Easing.OutQuint).Expire();
                     break;
@@ -199,13 +223,15 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
         public virtual bool OnPressed(KeyBindingPressEvent<DivaAction> e)
         {
-            this.Samples.Play();
+            
 
             if (Judged)
                 return false;
 
-            validPress = e.Action == validAction;
+
+            validPress = e.Action == validAction || e.Action == altAction;
             pressed = true;
+            
 
             return true;
         }

@@ -30,6 +30,9 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
         private List<DivaAction> inputs = new List<DivaAction>();
         private readonly DivaAction doubleAction;
         private int inputCount = 0;
+        private bool left = false;
+        private bool right = false;
+
 
         public DrawableDivaDoubleHitObject(DivaHitObject hitObject)
             : base(hitObject)
@@ -41,38 +44,34 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
         public override bool OnPressed(KeyBindingPressEvent<DivaAction> e)
         {
-            this.Samples.Play();
+            //this.Samples.Play();
 
             if (Judged || inputCount > 2)
                 return false;
 
+            if (e.Action == validAction)
+                left = true;
+            if (e.Action == doubleAction)
+                right = true;
 
-            if (e.Action == validAction || e.Action == doubleAction)
-                inputCount++;
-
-            if (inputCount == 2)
+            if (left && right)
             {
                 pressed = true;
                 validPress = true;
             }
 
-            // inputs.Add(action);
-            // inputCount++;
-
-            // if(inputCount == 2)
-            // {
-            // 	pressed = true;
-            // 	validPress = inputs.Contains(validAction) && inputs.Contains(doubleAction);
-            // }
-
             return true;
         }
 
-        // public override void OnReleased(KeyBindingReleaseEvent<DivaAction> e)
-        // {
-        //     // inputs.Remove(action);
-        // 	// inputCount--;
-        // }
+        public override void OnReleased(KeyBindingReleaseEvent<DivaAction> e)
+        {
+            //inputs.Remove(action);
+        	if (e.Action == validAction)
+                left = false;
+            if (e.Action == doubleAction)
+                right = false;
+
+        }
     }
 
 }

@@ -25,6 +25,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
         private DivaAction prevAction = DivaAction.Triangle;
         private Vector2 prevObjectPos = Vector2.Zero;
+        private Vector2 prevPos = Vector2.Zero;
         //these variables were at the end of the class, such heresy had i done
 
         private const float approach_piece_distance = 1200;
@@ -48,7 +49,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         protected override IEnumerable<DivaHitObject> ConvertHitObject(HitObject original, IBeatmap beatmap, CancellationToken cancellationToken)
         {
             //not sure if handling the cancellation is needed, as offical modes doesnt handle *scratches my head* or even its possible
-            var pos = (original as IHasPosition)?.Position ?? Vector2.Zero;
+            var pos = validatePos((original as IHasPosition)?.Position ?? Vector2.Zero);
 
             //currently press presses are placed in place of sliders as placeholder, but arcade slider are better suited for these
             //another option would be long sliders: arcade sliders, short sliders: doubles
@@ -86,7 +87,33 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
             _ => DivaAction.Up
         };
 
-        //placeholder
+
+        private Vector2 validatePos(Vector2 pos) {
+            if (Math.Abs(pos.X - prevPos.X) <= 50) {
+                var xDir = pos.X - prevPos.X;
+                if (xDir > 0) {
+                    pos.X = prevPos.X+50;
+                } else {
+                    pos.X = prevPos.X-50;
+                }
+
+
+            };
+            if (Math.Abs(pos.Y - prevPos.Y) <= 50) {
+                var yDir = pos.X - prevPos.X;
+                if (yDir > 0) {
+                    pos.Y = prevPos.Y+50;
+                } else {
+                    pos.Y = prevPos.Y-50;
+                }
+            };
+            prevPos = pos;
+            return pos;
+        }
+
+
+
+
         private DivaAction ValidAction()
         {
             var ac = DivaAction.Circle;
