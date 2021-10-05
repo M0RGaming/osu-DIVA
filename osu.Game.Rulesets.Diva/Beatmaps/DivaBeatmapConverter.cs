@@ -98,22 +98,24 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
 
         private Vector2 validatePos(Vector2 pos) {
-            if (Math.Abs(pos.X - prevPos.X) <= 50) {
+
+
+            if (Math.Abs(pos.X - prevPos.X) <= 10) {
                 var xDir = pos.X - prevPos.X;
                 if (xDir > 0) {
-                    pos.X = prevPos.X+50;
+                    pos.X = prevPos.X+10;
                 } else {
-                    pos.X = prevPos.X-50;
+                    pos.X = prevPos.X-10;
                 }
 
 
             };
-            if (Math.Abs(pos.Y - prevPos.Y) <= 50) {
-                var yDir = pos.X - prevPos.X;
+            if (Math.Abs(pos.Y - prevPos.Y) <= 10) {
+                var yDir = pos.Y - prevPos.Y;
                 if (yDir > 0) {
-                    pos.Y = prevPos.Y+50;
+                    pos.Y = prevPos.Y+10;
                 } else {
-                    pos.Y = prevPos.Y-50;
+                    pos.Y = prevPos.Y-10;
                 }
             };
             prevPos = pos;
