@@ -23,7 +23,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         public int TargetButtons;
         public bool AllowDoubles = true;
 
-        private DivaAction prevAction = DivaAction.Triangle;
+        private int prevAction = 0;
         private Vector2 prevObjectPos = Vector2.Zero;
         private Vector2 prevPos = Vector2.Zero;
         //these variables were at the end of the class, such heresy had i done
@@ -61,8 +61,8 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(comboData?.NewCombo ?? false),
-                    DoubleAction = DoubleAction(prevAction),
+                    ValidAction = ValidAction(comboData?.NewCombo ?? false, original.StartTime),
+                    DoubleAction = ArrowAction(prevAction),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
             }
@@ -73,19 +73,27 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(comboData?.NewCombo ?? false),
+                    ValidAction = ValidAction(comboData?.NewCombo ?? false, original.StartTime),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
             }
 
         }
 
-        private static DivaAction DoubleAction(DivaAction ac) => ac switch
+        private static DivaAction ArrowAction(int ac) => ac switch
         {
-            DivaAction.Circle => DivaAction.Right,
-            DivaAction.Cross => DivaAction.Down,
-            DivaAction.Square => DivaAction.Left,
+            0 => DivaAction.Right,
+            1 => DivaAction.Down,
+            2 => DivaAction.Left,
             _ => DivaAction.Up
+        };
+
+        private static DivaAction ShapeAction(int ac) => ac switch
+        {
+            0 => DivaAction.Circle,
+            1 => DivaAction.Cross,
+            2 => DivaAction.Square,
+            _ => DivaAction.Triangle
         };
 
 
@@ -115,36 +123,25 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
 
 
-        private DivaAction ValidAction(bool newCombo)
+        private DivaAction ValidAction(bool newCombo, double startTime)
         {
             if (newCombo)
             {
-                var ac = DivaAction.Circle;
-                switch (prevAction)
+
+                var noteType = (int)Math.Floor(startTime * Math.PI * 1000) % this.TargetButtons;
+
+
+                if (noteType == prevAction)
                 {
-                    case DivaAction.Circle:
-                        if (this.TargetButtons < 2) break;
-                        ac = DivaAction.Cross;
-                        break;
-
-                    case DivaAction.Cross:
-                        if (this.TargetButtons < 3) break;
-                        ac = DivaAction.Square;
-                        break;
-
-                    case DivaAction.Square:
-                        if (this.TargetButtons < 4) break;
-                        ac = DivaAction.Triangle;
-                        break;
+                    noteType = (noteType + 1) % this.TargetButtons;
                 }
 
-
-                prevAction = ac;
-                return ac;
+                prevAction = noteType;
+                return ShapeAction(noteType);
             }
             else
             {
-                return prevAction;
+                return ShapeAction(prevAction);
             };
         }
 
