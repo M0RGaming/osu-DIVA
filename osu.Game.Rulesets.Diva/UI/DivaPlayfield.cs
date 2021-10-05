@@ -9,6 +9,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Pooling;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input.Bindings;
+using osuTK;
 using osu.Game.Skinning;
 using osu.Game.Audio;
 using osu.Game.Rulesets.Judgements;
@@ -28,6 +29,9 @@ namespace osu.Game.Rulesets.Diva.UI
         SkinnableSound hitSample;
         private readonly JudgementContainer<DrawableDivaJudgement> judgementLayer;
 
+
+        public static readonly Vector2 BASE_SIZE = new Vector2(512, 384);
+
         private readonly IDictionary<HitResult, DrawablePool<DrawableDivaJudgement>> poolDictionary = new Dictionary<HitResult, DrawablePool<DrawableDivaJudgement>>();
 
         private readonly Container judgementAboveHitObjectLayer;
@@ -43,6 +47,10 @@ namespace osu.Game.Rulesets.Diva.UI
 
         public DivaPlayfield()
         {
+
+            Anchor = Anchor.Centre;
+            Origin = Anchor.Centre;
+
             InternalChildren = new Drawable[]
             {
                 judgementLayer = new JudgementContainer<DrawableDivaJudgement> { RelativeSizeAxes = Axes.Both },
