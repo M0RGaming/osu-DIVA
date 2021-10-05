@@ -50,6 +50,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         {
             //not sure if handling the cancellation is needed, as offical modes doesnt handle *scratches my head* or even its possible
             var pos = validatePos((original as IHasPosition)?.Position ?? Vector2.Zero);
+            var comboData = original as IHasCombo;
 
             //currently press presses are placed in place of sliders as placeholder, but arcade slider are better suited for these
             //another option would be long sliders: arcade sliders, short sliders: doubles
@@ -60,7 +61,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(),
+                    ValidAction = ValidAction(comboData?.NewCombo ?? false),
                     DoubleAction = DoubleAction(prevAction),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
@@ -72,7 +73,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(),
+                    ValidAction = ValidAction(comboData?.NewCombo ?? false),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
             }
@@ -114,26 +115,32 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
 
 
-        private DivaAction ValidAction()
+        private DivaAction ValidAction(bool newCombo)
         {
-            var ac = DivaAction.Circle;
-
-            switch (prevAction)
+            var ac = prevAction;
+            if (newCombo)
             {
-                case DivaAction.Circle:
-                    if (this.TargetButtons < 2) break;
-                    ac = DivaAction.Cross;
-                    break;
+                switch (prevAction)
+                {
+                    case DivaAction.Circle:
+                        if (this.TargetButtons < 2) break;
+                        ac = DivaAction.Cross;
+                        break;
 
-                case DivaAction.Cross:
-                    if (this.TargetButtons < 3) break;
-                    ac = DivaAction.Square;
-                    break;
+                    case DivaAction.Cross:
+                        if (this.TargetButtons < 3) break;
+                        ac = DivaAction.Square;
+                        break;
 
-                case DivaAction.Square:
-                    if (this.TargetButtons < 4) break;
-                    ac = DivaAction.Triangle;
-                    break;
+                    case DivaAction.Square:
+                        if (this.TargetButtons < 4) break;
+                        ac = DivaAction.Triangle;
+                        break;
+
+                    default:
+                        ac = DivaAction.Circle;
+                        break;
+                }
             }
 
             prevAction = ac;

@@ -28,5 +28,5 @@ jobs:
             with:
                 files: osu.Game.Rulesets.Diva/bin/Release/net5.0/osu.Game.Rulesets.Diva.dll
             env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
 
