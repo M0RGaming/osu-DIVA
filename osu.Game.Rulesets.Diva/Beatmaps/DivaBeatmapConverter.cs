@@ -117,9 +117,9 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
         private DivaAction ValidAction(bool newCombo)
         {
-            var ac = prevAction;
             if (newCombo)
             {
+                var ac = DivaAction.Circle;
                 switch (prevAction)
                 {
                     case DivaAction.Circle:
@@ -136,15 +136,16 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                         if (this.TargetButtons < 4) break;
                         ac = DivaAction.Triangle;
                         break;
-
-                    default:
-                        ac = DivaAction.Circle;
-                        break;
                 }
-            }
 
-            prevAction = ac;
-            return ac;
+
+                prevAction = ac;
+                return ac;
+            }
+            else
+            {
+                return prevAction;
+            };
         }
 
         private Vector2 GetApproachPieceOriginPos(Vector2 currentObjectPos)
