@@ -25,6 +25,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
 
         private int prevAction = 0;
         private Vector2 prevObjectPos = Vector2.Zero;
+        private Vector2 originalPos = Vector2.Zero;
         private Vector2 prevPos = Vector2.Zero;
         //these variables were at the end of the class, such heresy had i done
 
@@ -100,25 +101,14 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         private Vector2 validatePos(Vector2 pos) {
 
 
-            if (Math.Abs(pos.X - prevPos.X) <= 10) {
-                var xDir = pos.X - prevPos.X;
-                if (xDir > 0) {
-                    pos.X = prevPos.X+10;
-                } else {
-                    pos.X = prevPos.X-10;
-                }
-
-
-            };
-            if (Math.Abs(pos.Y - prevPos.Y) <= 10) {
-                var yDir = pos.Y - prevPos.Y;
-                if (yDir > 0) {
-                    pos.Y = prevPos.Y+10;
-                } else {
-                    pos.Y = prevPos.Y-10;
-                }
-            };
-            prevPos = pos;
+            if (pos == originalPos) {
+                pos.X = prevPos.X + 10;
+                pos.Y = prevPos.Y + 10;
+                prevPos = pos;
+            } else {
+                originalPos = pos;
+                prevPos = pos;
+            }
             return pos;
         }
 
