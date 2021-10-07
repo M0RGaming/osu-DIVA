@@ -50,8 +50,8 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         protected override IEnumerable<DivaHitObject> ConvertHitObject(HitObject original, IBeatmap beatmap, CancellationToken cancellationToken)
         {
             //not sure if handling the cancellation is needed, as offical modes doesnt handle *scratches my head* or even its possible
-            var pos = validatePos((original as IHasPosition)?.Position ?? Vector2.Zero);
-            var comboData = original as IHasCombo;
+            var newCombo = (original as IHasCombo)?.NewCombo ?? false;
+            var pos = validatePos((original as IHasPosition)?.Position ?? Vector2.Zero, newCombo);
 
             //currently press presses are placed in place of sliders as placeholder, but arcade slider are better suited for these
             //another option would be long sliders: arcade sliders, short sliders: doubles
@@ -62,7 +62,16 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(comboData?.NewCombo ?? false, original.StartTime),
+                    ValidAction = ValidAction(newCombo, original.StartTime),
+                    DoubleAction = ArrowAction(prevAction),
+                    ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
+                };
+                yield return new DoublePressButton
+                {
+                    Samples = original.Samples,
+                    StartTime = original.GetEndTime(),
+                    Position = Vector2.Add((original as IHasPathWithRepeats).CurvePositionAt(1),pos),
+                    ValidAction = ValidAction(newCombo, original.StartTime),
                     DoubleAction = ArrowAction(prevAction),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
@@ -74,7 +83,7 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
                     Samples = original.Samples,
                     StartTime = original.StartTime,
                     Position = pos,
-                    ValidAction = ValidAction(comboData?.NewCombo ?? false, original.StartTime),
+                    ValidAction = ValidAction(newCombo, original.StartTime),
                     ApproachPieceOriginPosition = GetApproachPieceOriginPos(pos),
                 };
             }
@@ -98,12 +107,19 @@ namespace osu.Game.Rulesets.Diva.Beatmaps
         };
 
 
-        private Vector2 validatePos(Vector2 pos) {
+        private Vector2 validatePos(Vector2 pos, bool newCombo) {
 
 
             if (pos == originalPos) {
-                pos.X = prevPos.X + 10;
-                pos.Y = prevPos.Y + 10;
+                if (newCombo)
+                {
+                    pos.X = originalPos.X + 50;
+                    pos.Y = originalPos.Y - 50;
+                } else
+                {
+                    pos.X = prevPos.X + 10;
+                    pos.Y = prevPos.Y + 10;
+                }
                 prevPos = pos;
             } else {
                 originalPos = pos;

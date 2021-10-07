@@ -37,6 +37,12 @@ namespace osu.Game.Rulesets.Diva.UI
                 {
                     LabelText = "Enable visual bursts",
                     Current = config.GetBindable<bool>(DivaRulesetSettings.EnableVisualBursts)
+                },
+                new SettingsSlider<int>
+                {
+                    LabelText = "Visual Burst Duration (ms)",
+                    Current = config.GetBindable<int>(DivaRulesetSettings.NoteDuration),
+                    ShowsDefaultIndicator = true,
                 }
             };
         }

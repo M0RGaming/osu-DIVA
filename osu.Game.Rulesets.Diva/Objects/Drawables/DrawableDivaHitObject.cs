@@ -43,6 +43,7 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
         protected BindableBool useXB = new BindableBool(false);
         protected BindableBool enableVisualBursts = new BindableBool(true);
+        protected BindableInt noteDuration = new(1000);
 
         protected override JudgementResult CreateResult(Judgement judgement) => new DivaJudgementResult(HitObject, judgement);
 
@@ -102,6 +103,7 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
         {
             config?.BindWith(DivaRulesetSettings.UseXBoxButtons, useXB);
             config?.BindWith(DivaRulesetSettings.EnableVisualBursts, enableVisualBursts);
+            config?.BindWith(DivaRulesetSettings.NoteDuration, noteDuration);
             string textureLocation = GetTextureLocation();
 
             AddInternal(new Sprite
@@ -195,17 +197,21 @@ namespace osu.Game.Rulesets.Diva.Objects.Drawables
 
         protected override void UpdateHitStateTransforms(ArmedState state)
         {
+
+            var duration = noteDuration.Value;
             switch (state)
             {
                 case ArmedState.Hit:
 
                     //this.Samples.Play();
                     if (enableVisualBursts.Value)
-                        this.ScaleTo(1.5f, 1500, Easing.OutQuint).FadeOut(1500, Easing.OutQuint).Expire();
+                        //this.ScaleTo(1.5f, 1500, Easing.OutQuint).FadeOut(1500, Easing.OutQuint).Expire();
+                        this.ScaleTo(1.5f, duration, Easing.OutQuint).FadeOut(duration, Easing.OutQuint).Expire();
                     break;
 
                 case ArmedState.Miss:
-                    const double duration = 1000;
+                    //const double duration = 1000;
+                    
 
                     this.ScaleTo(0.8f, duration, Easing.OutQuint);
                     this.MoveToOffset(new Vector2(0, 10), duration, Easing.In);
